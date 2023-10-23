@@ -1,6 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Status } from '../../types/Status';
+import { setQuery, setStatus } from '../../features/filter';
+import { RootState } from '../../app/store';
 
 export const TodoFilter: React.FC = () => {
+  const filter = useSelector((state: RootState) => state.filter);
+  const dispatch = useDispatch();
+  const [quer, setQuer] = useState('');
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = event.target.value;
+
+    setQuer(newQuery);
+    dispatch(setQuery(newQuery));
+  };
+
+  const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedStatus = event.target.value as Status;
+
+    dispatch(setStatus(selectedStatus));
+  };
+
+  // eslint-disable-next-line no-console
+  useEffect(() => console.log(filter));
+
   return (
     <form
       className="field has-addons"
@@ -8,7 +32,11 @@ export const TodoFilter: React.FC = () => {
     >
       <p className="control">
         <span className="select">
-          <select data-cy="statusSelect">
+          <select
+            data-cy="statusSelect"
+            onChange={handleStatusChange}
+            value={filter.status}
+          >
             <option value="all">All</option>
             <option value="active">Active</option>
             <option value="completed">Completed</option>
@@ -22,6 +50,8 @@ export const TodoFilter: React.FC = () => {
           type="text"
           className="input"
           placeholder="Search..."
+          value={quer}
+          onChange={handleQueryChange}
         />
         <span className="icon is-left">
           <i className="fas fa-magnifying-glass" />
